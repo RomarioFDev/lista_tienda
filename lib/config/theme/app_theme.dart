@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-final ThemeData appTheme = ThemeData(
-  colorSchemeSeed: Colors.indigo,
-  useMaterial3: true,
-);
+class AppTheme {
+  final ThemeData appTheme = ThemeData(
+      colorSchemeSeed: Colors.indigo,
+      useMaterial3: true,
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 30,
+        ),
+      ));
+}
