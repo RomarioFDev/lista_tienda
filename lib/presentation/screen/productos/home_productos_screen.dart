@@ -100,32 +100,76 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
       );
     }
 
+    const textColum = TextStyle(fontWeight: FontWeight.bold);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Productos'),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search, size: 35),
+          ),
+          const SizedBox(width: 10),
+        ],
       ),
       body: _productos.isEmpty
           ? const Center(
               child: Text('Empiece a agregar productos'),
             )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: db.listaProductos.length,
-                    itemBuilder: (context, index) => TablaProductos(
-                      name: db.listaProductos[index][0],
-                      price:
-                          double.parse(db.listaProductos[index][1].toString()),
-                      onDelete: () => eliminarProducto(index),
-                      onEdit: () => formEditarProducto(index),
+          : Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 0.5),
+                    child: Table(
+                      border: TableBorder.all(),
+                      columnWidths: const {
+                        0: FlexColumnWidth(1),
+                        1: FlexColumnWidth(0.5),
+                        2: FlexColumnWidth(0.5),
+                      },
+                      children: const [
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                          ),
+                          children: [
+                            TableCell(
+                              child: Center(
+                                  child: Text('Nombres', style: textColum)),
+                            ),
+                            TableCell(
+                              child: Center(
+                                  child: Text('Precio', style: textColum)),
+                            ),
+                            TableCell(
+                              child: Center(
+                                  child: Text('Acciones', style: textColum)),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 100,
-                )
-              ],
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: db.listaProductos.length,
+                      itemBuilder: (context, index) => TablaProductos(
+                        name: db.listaProductos[index][0],
+                        price: double.parse(
+                            db.listaProductos[index][1].toString()),
+                        onDelete: () => eliminarProducto(index),
+                        onEdit: () => formEditarProducto(index),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 100,
+                  )
+                ],
+              ),
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: formAgregarProducto,
