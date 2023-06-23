@@ -19,6 +19,9 @@ class HomeProductosScreen extends StatefulWidget {
 class _HomeProductosScreenState extends State<HomeProductosScreen> {
   final nameController = TextEditingController();
   final priceController = TextEditingController();
+
+  final nameEditController = TextEditingController();
+  final priceEditController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     /// Funcion para agregar productos
@@ -55,6 +58,30 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
       );
     }
 
+    /// Crear un formulario para editar productos
+    void formEditarProducto(int index) {
+      nameEditController.text = listaProductos[index].name;
+      priceEditController.text = listaProductos[index].price.toString();
+      showDialog(
+        context: context,
+        builder: (context) => AlertFormEdit(
+          nameController: nameEditController,
+          priceController: priceEditController,
+          onEdit: () {
+            setState(() {
+              listaProductos[index].name = nameEditController.text;
+              listaProductos[index].price =
+                  double.parse(priceEditController.text);
+            });
+            nameEditController.clear();
+            priceEditController.clear();
+            context.pop();
+          },
+          onCanceled: () => context.pop(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Productos'),
@@ -68,7 +95,7 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
                 name: listaProductos[index].name,
                 price: double.parse(listaProductos[index].price.toString()),
                 onDelete: () => eliminarProducto(index),
-                onEdit: () {},
+                onEdit: () => formEditarProducto(index),
               ),
             ),
           ),
