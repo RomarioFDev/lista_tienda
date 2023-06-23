@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lista_tienda/infrastructure/models/productos_model.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lista_tienda/infrastructure/data/local_database.dart';
 import 'package:lista_tienda/presentation/widgets/widgets.dart';
 
 class HomeProductosScreen extends StatefulWidget {
@@ -16,28 +17,49 @@ class HomeProductosScreen extends StatefulWidget {
 class _HomeProductosScreenState extends State<HomeProductosScreen> {
   final nameController = TextEditingController();
   final priceController = TextEditingController();
+
+  final nameEditController = TextEditingController();
+  final priceEditController = TextEditingController();
+
+  /// Referencia de la caja de hive
+  final _productos = Hive.box('productos');
+
+  /// Instancia de la lista
+  ProductosDatabase db = ProductosDatabase();
+
+  @override
+  void initState() {
+    if (_productos.isEmpty) {
+      return;
+    } else {
+      db.cargarData();
+    }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    /// Lista de productos
-    List<Productos> listaProductos = [];
-
     /// Funcion para agregar productos
     void agregarProducto() {
-      listaProductos.addAll(
-        [
-          Productos(
-            name: nameController.text,
-            price: double.parse(priceController.text),
-          )
-        ].toList(),
-      );
-      setState(() {});
+      setState(() {
+        db.listaProductos.add(
+          [nameController.text, double.parse(priceController.text)],
+        );
+        db.actualizarData();
+      });
+
       nameController.clear();
       priceController.clear();
-      for (var i = 0; i < listaProductos.length; i++) {
-        print(listaProductos[i].name);
-      }
       context.pop();
+    }
+
+    /// Funcion para eliminar productos
+    void eliminarProducto(int index) {
+      setState(() {
+        db.listaProductos.removeAt(index);
+        db.actualizarData();
+      });
     }
 
     /// Crear un formulario para agregar productos
@@ -53,37 +75,58 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
       );
     }
 
+    /// Crear un formulario para editar productos
+    void formEditarProducto(int index) {
+      nameEditController.text = db.listaProductos[index][0];
+      priceEditController.text = db.listaProductos[index][1].toString();
+      showDialog(
+        context: context,
+        builder: (context) => AlertFormEdit(
+          nameController: nameEditController,
+          priceController: priceEditController,
+          onEdit: () {
+            setState(() {
+              db.listaProductos[index][0] = nameEditController.text;
+              db.listaProductos[index][1] =
+                  double.parse(priceEditController.text);
+              db.actualizarData();
+            });
+            nameEditController.clear();
+            priceEditController.clear();
+            context.pop();
+          },
+          onCanceled: () => context.pop(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prodcutos'),
+        title: const Text('Productos'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: listaProductos.length,
-              itemBuilder: (context, index) => TablaProductos(
-                name: listaProductos[index].name,
-                price: double.parse(listaProductos[index].price.toString()),
-              ),
+      body: _productos.isEmpty
+          ? const Center(
+              child: Text('Empiece a agregar productos'),
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: db.listaProductos.length,
+                    itemBuilder: (context, index) => TablaProductos(
+                      name: db.listaProductos[index][0],
+                      price:
+                          double.parse(db.listaProductos[index][1].toString()),
+                      onDelete: () => eliminarProducto(index),
+                      onEdit: () => formEditarProducto(index),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 100,
+                )
+              ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              for (var i = 0; i < listaProductos.length; i++) {
-                print('''
-                        ${listaProductos[i].name}
-                        ${listaProductos[i].price}
-                      ''');
-              }
-            },
-            child: const Text('Imprimir'),
-          ),
-          const SizedBox(
-            height: 100,
-          )
-        ],
-      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: formAgregarProducto,
         label: const Text('Agregar Producto'),

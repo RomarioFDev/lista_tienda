@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class TablaProductos extends StatelessWidget {
   final String name;
   final double price;
+  final Function()? onEdit;
+  final Function()? onDelete;
   const TablaProductos({
     super.key,
     required this.name,
     required this.price,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -22,16 +26,19 @@ class TablaProductos extends StatelessWidget {
         },
         children: [
           TableRow(children: [
-            Text(name),
-            Text('$price'),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 8),
+              child: Text(name),
+            ),
+            Center(child: Text('$price')),
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: onEdit,
                   icon: const Icon(Icons.edit),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: onDelete,
                   icon: const Icon(Icons.delete),
                 ),
               ],
