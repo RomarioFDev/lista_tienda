@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lista_tienda/infrastructure/models/productos_model.dart';
 import 'package:lista_tienda/presentation/widgets/widgets.dart';
 
+/// Lista de productos
+List<Productos> listaProductos = [];
+
 class HomeProductosScreen extends StatefulWidget {
   static const String name = '/';
   const HomeProductosScreen({
@@ -18,26 +21,25 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
   final priceController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    /// Lista de productos
-    List<Productos> listaProductos = [];
-
     /// Funcion para agregar productos
     void agregarProducto() {
-      listaProductos.addAll(
-        [
+      setState(() {
+        listaProductos.add(
           Productos(
-            name: nameController.text,
-            price: double.parse(priceController.text),
-          )
-        ].toList(),
-      );
-      setState(() {});
+              name: nameController.text,
+              price: double.parse(priceController.text)),
+        );
+      });
       nameController.clear();
       priceController.clear();
-      for (var i = 0; i < listaProductos.length; i++) {
-        print(listaProductos[i].name);
-      }
       context.pop();
+    }
+
+    /// Funcion para eliminar productos
+    void eliminarProducto(int index) {
+      setState(() {
+        listaProductos.removeAt(index);
+      });
     }
 
     /// Crear un formulario para agregar productos
@@ -55,7 +57,7 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prodcutos'),
+        title: const Text('Productos'),
       ),
       body: Column(
         children: [
@@ -65,19 +67,10 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
               itemBuilder: (context, index) => TablaProductos(
                 name: listaProductos[index].name,
                 price: double.parse(listaProductos[index].price.toString()),
+                onDelete: () => eliminarProducto(index),
+                onEdit: () {},
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              for (var i = 0; i < listaProductos.length; i++) {
-                print('''
-                        ${listaProductos[i].name}
-                        ${listaProductos[i].price}
-                      ''');
-              }
-            },
-            child: const Text('Imprimir'),
           ),
           const SizedBox(
             height: 100,
