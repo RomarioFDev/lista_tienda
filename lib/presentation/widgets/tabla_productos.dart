@@ -22,7 +22,7 @@ class TablaProductos extends StatelessWidget {
         columnWidths: const {
           0: FlexColumnWidth(1),
           1: FlexColumnWidth(0.5),
-          2: FlexColumnWidth(0.5),
+          2: FlexColumnWidth(0.6),
         },
         children: [
           TableRow(children: [

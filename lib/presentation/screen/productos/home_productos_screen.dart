@@ -128,7 +128,7 @@ class _HomeProductosScreenState extends State<HomeProductosScreen> {
                       columnWidths: const {
                         0: FlexColumnWidth(1),
                         1: FlexColumnWidth(0.5),
-                        2: FlexColumnWidth(0.5),
+                        2: FlexColumnWidth(0.6),
                       },
                       children: const [
                         TableRow(
