@@ -22,15 +22,19 @@ class TablaProductos extends StatelessWidget {
         columnWidths: const {
           0: FlexColumnWidth(1),
           1: FlexColumnWidth(0.5),
-          2: FlexColumnWidth(0.5),
+          2: FlexColumnWidth(0.6),
         },
         children: [
           TableRow(children: [
             Padding(
-              padding: const EdgeInsets.only(left: 8, top: 8),
+              padding: const EdgeInsets.only(left: 8, top: 10),
               child: Text(name),
             ),
-            Center(child: Text('$price')),
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text('$price'),
+            )),
             Row(
               children: [
                 IconButton(
